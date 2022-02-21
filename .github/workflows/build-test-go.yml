@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  workflow_call:
+    inputs:
+      build_command:
+        required: true
+        type: string
+      test_command:
+        required: true
+        type: string
+      go_version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+
+      - uses: sigstore/cosign-installer@116dc6872c0a067bcb78758f18955414cdbf918f # v1.4.1
+
+      - uses: actions/setup-go@424fc82d43fa5a37540bae62709ddcc23d9520d4 # v2.1.5
+        with:
+          go-version: ${{ inputs.go_version }}
+
+      - name: build
+        run: ${{ inputs.build_command }}
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+
+      - uses: actions/setup-go@424fc82d43fa5a37540bae62709ddcc23d9520d4 # v2.1.5
+        with:
+          go-version: ${{ inputs.go_version }}
+
+      - name: test
+        run: ${{ inputs.test_command }}
